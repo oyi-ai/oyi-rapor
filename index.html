@@ -3,670 +3,292 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OYİ Rapor Asistanı - Saha Modu</title>
-  <!-- Bootstrap 5 CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- FontAwesome İkonlar -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Google Inter Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
+  <title>OYİ Rapor Asistanı</title>
   <style>
-    :root {
-      --bg-dark: #0b1329;
-      --card-bg: #15203b;
-      --subcard-bg: #0d162d;
-      --accent-blue: #0284c7;
-      --accent-cyan: #38bdf8;
-      --border-color: #243456;
-      --text-muted: #8b9cb7;
-      --text-main: #f8fafc;
-    }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; }
+    .container { max-width: 750px; margin: 0 auto; background: #ffffff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    h2 { text-align: center; color: #1e293b; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; font-weight: 600; color: #334155; margin-bottom: 6px; }
+    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 2px #bfdbfe; }
+    .hidden { display: none; }
+    .btn { background-color: #2563eb; color: white; padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 600; width: 100%; margin-top: 10px; }
+    .btn:hover { background-color: #1d4ed8; }
+    .btn-voice { background-color: #059669; margin-bottom: 10px; }
+    .btn-voice:hover { background-color: #047857; }
+    .btn-add { background-color: #0284c7; width: auto; font-size: 14px; padding: 8px 15px; margin-top: 5px; }
+    .btn-add:hover { background-color: #0369a1; }
+    .btn-remove { background-color: #dc2626; color: white; border: none; border-radius: 6px; padding: 8px 12px; cursor: pointer; font-weight: bold; }
+    .btn-remove:hover { background-color: #b91c1c; }
+    
+    /* Bulgular Modülü Stilleri */
+    .bulgu-card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; margin-bottom: 10px; display: flex; gap: 10px; align-items: flex-end; }
+    .bulgu-row-no { flex: 1; }
+    .bulgu-row-tanim { flex: 3; }
+    .bulgu-row-yer { flex: 3; }
+    .section-title { font-size: 16px; font-weight: 700; color: #0f172a; margin-top: 20px; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px dashed #cbd5e1; }
 
-    body {
-      background-color: var(--bg-dark);
-      color: var(--text-main);
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      min-height: 100vh;
-    }
-
-    .main-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 20px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-    }
-
-    .sub-card {
-      background: var(--subcard-bg);
-      border-left: 4px solid var(--accent-cyan);
-      border-radius: 14px;
-      padding: 16px;
-    }
-
-    .form-control, .form-select {
-      background-color: var(--subcard-bg);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      border-radius: 10px;
-      padding: 0.65rem 0.9rem;
-      font-size: 0.92rem;
-    }
-
-    .form-control:focus, .form-select:focus {
-      background-color: #070d1d;
-      border-color: var(--accent-cyan);
-      color: #ffffff;
-      box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
-    }
-
-    .form-control::placeholder {
-      color: #4f6385;
-    }
-
-    .form-label {
-      color: var(--text-muted);
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.6px;
-      margin-bottom: 6px;
-    }
-
-    .btn-tactical {
-      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-      border: none;
-      color: #ffffff;
-      font-weight: 700;
-      letter-spacing: 0.8px;
-      border-radius: 12px;
-      padding: 12px;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
-    }
-
-    .btn-tactical:hover {
-      background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
-    }
-
-    .btn-mic {
-      transition: all 0.3s ease;
-      font-weight: 600;
-      border-radius: 20px;
-    }
-
-    .recording {
-      animation: pulse-red 1.3s infinite;
-      background-color: #dc2626 !important;
-      border-color: #ef4444 !important;
-      color: #ffffff !important;
-    }
-
-    @keyframes pulse-red {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.03); }
-      100% { transform: scale(1); }
-    }
-
-    .badge-tactical {
-      background-color: rgba(2, 132, 199, 0.2);
-      color: var(--accent-cyan);
-      border: 1px solid rgba(56, 189, 248, 0.4);
-      font-size: 0.7rem;
-      font-weight: 700;
-    }
-
-    .header-icon-box {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 42px;
-      height: 42px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-color);
-    }
-
-    .nav-pills .nav-link {
-      color: var(--text-muted);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 8px 16px;
-      font-weight: 600;
-      font-size: 0.82rem;
-    }
-
-    .nav-pills .nav-link.active {
-      background-color: var(--accent-blue);
-      color: #fff;
-      border-color: var(--accent-cyan);
-    }
-
-    .report-card {
-      background: var(--subcard-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 12px;
-    }
-
-    .output-box {
-      background: #070d1d;
-      border: 1px solid var(--accent-cyan);
-      border-radius: 12px;
-      padding: 16px;
-      color: #f8fafc;
-      font-family: 'Courier New', Courier, monospace;
-      white-space: pre-wrap;
-      word-break: break-word;
-      font-size: 0.88rem;
-      line-height: 1.5;
-    }
-
-    /* Yazdırma (Print / PDF) Stilleri */
-    @media print {
-      body * {
-        visibility: hidden;
-      }
-      #printArea, #printArea * {
-        visibility: visible;
-      }
-      #printArea {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        color: #000 !important;
-        background: #fff !important;
-        padding: 20px;
-      }
-      #printArea table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 15px;
-      }
-      #printArea th, #printArea td {
-        border: 1px solid #000;
-        padding: 6px 10px;
-        font-size: 10pt;
-      }
-    }
+    .report-output { margin-top: 25px; padding: 15px; background: #f8fafc; border-left: 4px solid #2563eb; border-radius: 4px; white-space: pre-wrap; font-family: monospace; font-size: 13px; line-height: 1.5; }
+    .req { color: #dc2626; }
   </style>
 </head>
-<body class="py-3 py-md-4">
-  <div class="container" style="max-width: 560px;">
-    <div class="main-card p-3 p-sm-4">
-      
-      <!-- Ortalanmış Header -->
-      <div class="text-center mb-3 pb-3 border-bottom border-secondary border-opacity-25">
-        <div class="d-flex justify-content-center mb-2">
-          <span class="badge badge-tactical px-2 py-1 rounded-pill d-flex align-items-center gap-1">
-            <i class="fa-solid fa-circle text-success" style="font-size: 0.5rem;"></i> SAHA CANLI
-          </span>
-        </div>
+<body>
 
-        <div class="d-flex align-items-center justify-content-center gap-3">
-          <div class="header-icon-box shadow-sm" style="font-size: 1.5rem;">🇹🇷</div>
-          <div>
-            <h5 class="fw-bold mb-0 text-white text-uppercase" style="letter-spacing: 0.8px;">OYİ RAPOR ASİSTANI</h5>
-            <small class="text-secondary" style="font-size: 0.72rem; letter-spacing: 0.5px;">OLAY YERİ İNCELEME SİSTEMİ</small>
-          </div>
-          <div class="header-icon-box text-info shadow-sm" style="font-size: 1.3rem;">
-            <i class="fa-solid fa-fingerprint"></i>
-          </div>
-        </div>
+<div class="container">
+  <h2>OYİ Rapor Asistanı</h2>
+  
+  <form id="oyiForm">
+    <!-- Ekip Kodu & Tarih/Saat -->
+    <div style="display: flex; gap: 10px;">
+      <div class="form-group" style="flex: 1;">
+        <label for="ekipKodu">OYİ Ekip Kodu <span class="req">*</span></label>
+        <input type="text" id="ekipKodu" placeholder="Örn: OYİ-01" required>
       </div>
-
-      <!-- Sekme Navigasyonu -->
-      <ul class="nav nav-pills nav-justified mb-3" id="mainTabs" role="tablist">
-        <li class="nav-item">
-          <button class="nav-link active" id="form-tab" data-bs-toggle="pill" data-bs-target="#form-section" type="button">
-            <i class="fa-solid fa-pen-to-square me-1"></i> Rapor Oluştur
-          </button>
-        </li>
-        <li class="nav-item">
-          <button class="nav-link" id="list-tab" data-bs-toggle="pill" data-bs-target="#list-section" type="button" onclick="renderReportList()">
-            <i class="fa-solid fa-folder-open me-1"></i> Kaydedilenler (<span id="savedCount">0</span>)
-          </button>
-        </li>
-      </ul>
-
-      <div class="tab-content" id="mainTabsContent">
-        
-        <!-- SEKME 1: RAPOR FORMU -->
-        <div class="tab-pane fade show active" id="form-section">
-          <form id="raporForm">
-            <input type="hidden" id="editingId" value="">
-
-            <div id="editingBanner" class="alert alert-warning py-1 px-2 mb-3 d-none align-items-center justify-content-between" style="font-size: 0.8rem;">
-              <span><i class="fa-solid fa-pen me-1"></i> Kayıtlı rapor düzenleniyor...</span>
-              <button type="button" class="btn btn-sm btn-link text-dark fw-bold p-0 text-decoration-none" onclick="cancelEdit()">Vazgeç</button>
-            </div>
-
-            <!-- Olay Adı -->
-            <div class="mb-3">
-              <label class="form-label text-uppercase"><i class="fa-solid fa-clipboard-list me-1 text-info"></i> Olay Adı</label>
-              <input type="text" id="olayAdi" class="form-control" placeholder="Örn: Evden Hırsızlık, Ateşli Silah" required>
-            </div>
-
-            <!-- Saatler -->
-            <div class="row g-2 mb-3">
-              <div class="col-6">
-                <label class="form-label text-uppercase"><i class="fa-solid fa-clock me-1 text-info"></i> Bildiriliş Saati</label>
-                <input type="time" id="bildirilisSaati" class="form-control" required>
-              </div>
-              <div class="col-6">
-                <label class="form-label text-uppercase"><i class="fa-solid fa-route me-1 text-info"></i> İntikal Saati</label>
-                <input type="time" id="intikalSaati" class="form-control" required>
-              </div>
-            </div>
-
-            <!-- Ekip Kodu -->
-            <div class="mb-3">
-              <label class="form-label text-uppercase"><i class="fa-solid fa-user-shield me-1 text-info"></i> Talep Eden Ekip Kodu</label>
-              <input type="text" id="ekipKodu" class="form-control" placeholder="Örn: 4512 veya Asayiş Ekipleri" required>
-            </div>
-
-            <!-- Olay Adresi -->
-            <div class="mb-3">
-              <label class="form-label text-uppercase"><i class="fa-solid fa-location-dot me-1 text-info"></i> Olay Adresi</label>
-              <textarea id="olayAdresi" class="form-control" rows="2" placeholder="Mahalle, sokak, bina no, ilçe..." required></textarea>
-            </div>
-
-            <!-- Şahıs Bilgileri -->
-            <div class="sub-card mb-3">
-              <div class="d-flex align-items-center gap-2 mb-3">
-                <i class="fa-solid fa-id-card-clip text-info"></i>
-                <h6 class="fw-bold mb-0 text-white text-uppercase" style="font-size: 0.85rem;">İlgili Şahıs Bilgileri</h6>
-              </div>
-              
-              <div class="mb-2">
-                <label class="form-label">T.C. KİMLİK NO</label>
-                <input type="text" id="tcNo" class="form-control form-control-sm" maxlength="11" placeholder="11 haneli T.C. Kimlik No">
-              </div>
-
-              <div class="mb-2">
-                <label class="form-label">AD - SOYAD</label>
-                <input type="text" id="adSoyad" class="form-control form-control-sm" placeholder="Şahsın Adı ve Soyadı">
-              </div>
-
-              <div>
-                <label class="form-label">OLAYDAKİ SIFATI</label>
-                <select id="sifat" class="form-select form-select-sm">
-                  <option value="">Seçiniz...</option>
-                  <option value="Şahıs Yok">Şahıs Yok</option>
-                  <option value="Müşteki">Müşteki</option>
-                  <option value="Şüpheli">Şüpheli</option>
-                  <option value="Yaralı">Yaralı</option>
-                  <option value="Mağdur">Mağdur</option>
-                  <option value="Müşteki Yakını">Müşteki Yakını</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Büyütülmüş Notlar & Sesle Yaz -->
-            <div class="mb-3">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <label class="form-label text-uppercase mb-0"><i class="fa-solid fa-pen-to-square me-1 text-info"></i> Olay Yeri Notları</label>
-                <button type="button" id="micBtn" class="btn btn-outline-danger btn-sm rounded-pill px-3 btn-mic">
-                  <i class="fa-solid fa-microphone me-1"></i> Sesle Yaz
-                </button>
-              </div>
-              <textarea id="notlar" class="form-control" rows="7" style="min-height: 160px;" placeholder="Olay yeri gözlemleri, bulgular, delil detayları veya ilave notlar..."></textarea>
-            </div>
-
-            <!-- Submit Button -->
-            <button type="submit" id="submitBtn" class="btn btn-tactical w-100 mt-2">
-              <i class="fa-solid fa-floppy-disk me-2"></i> RAPORU KAYDET VE GÖRÜNTÜLE
-            </button>
-          </form>
-
-          <!-- Oluşturulan Rapor Metni ve Aksiyon Kutusu -->
-          <div id="outputContainer" class="mt-4 d-none">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="fw-bold text-info" style="font-size: 0.85rem;"><i class="fa-solid fa-file-lines me-1"></i> HAZIR RAPOR METNİ</span>
-              <div class="d-flex gap-2">
-                <button class="btn btn-sm btn-outline-light" onclick="copyReportText()">
-                  <i class="fa-solid fa-copy me-1"></i> Metni Kopyala
-                </button>
-                <button class="btn btn-sm btn-success" onclick="printReport()">
-                  <i class="fa-solid fa-print me-1"></i> Yazdır / PDF
-                </button>
-              </div>
-            </div>
-            <div id="reportTextOutput" class="output-box"></div>
-          </div>
-        </div>
-
-        <!-- SEKME 2: KAYDEDİLEN RAPORLAR LİSTESİ -->
-        <div class="tab-pane fade" id="list-section">
-          <div id="reportListContainer"></div>
-        </div>
-
+      <div class="form-group" style="flex: 1;">
+        <label for="tarihSaat">Tarih / Saat <span class="req">*</span></label>
+        <input type="datetime-local" id="tarihSaat" required>
       </div>
-
-      <div id="statusAlert" class="alert mt-3 d-none text-center" role="alert"></div>
     </div>
-  </div>
 
-  <!-- Gizli Yazdırma / PDF Hazırlama Alanı -->
-  <div id="printArea" class="d-none"></div>
+    <!-- Olay Türü -->
+    <div class="form-group">
+      <label for="olayTuru">Olay Türü <span class="req">*</span></label>
+      <select id="olayTuru" required>
+        <option value="">-- Olay Türü Seçiniz --</option>
+        <option value="Hırsızlık">Hırsızlık</option>
+        <option value="Kasten Yaralama">Kasten Yaralama</option>
+        <option value="Mala Zarar Verme">Mala Zarar Verme</option>
+        <option value="Ateşli Silahla Yaralama">Ateşli Silahla Yaralama</option>
+        <option value="Şüpheli Ölüm">Şüpheli Ölüm</option>
+        <option value="Diğer">Diğer</option>
+      </select>
+    </div>
 
-  <!-- Bootstrap 5 JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Talep Eden Ekip -->
+    <div class="form-group">
+      <label for="talepEdenEkip">Talep Eden Ekip</label>
+      <select id="talepEdenEkip" onchange="toggleCeraimNo()">
+        <option value="">-- Ekip Seçiniz (Opsiyonel) --</option>
+        <option value="Asayiş Büro Amirliği">Asayiş Büro Amirliği</option>
+        <option value="Cinayet Büro Amirliği">Cinayet Büro Amirliği</option>
+        <option value="Narkotik Suçlarla Mücadele Büro">Narkotik Suçlarla Mücadele Büro</option>
+        <option value="Polis Merkezi Amirliği">Polis Merkezi Amirliği</option>
+        <option value="Jandarma Asayiş">Jandarma Asayiş</option>
+      </select>
+    </div>
 
-  <script>
-    const STORAGE_KEY = "oyi_saved_reports";
-    let currentPayload = null;
+    <!-- Ceraim No (Dinamik Alan: Yalnızca Talep Eden Ekip Seçilirse Açılır) -->
+    <div class="form-group hidden" id="ceraimContainer">
+      <label for="ceraimNo">Ceraim No <span class="req">*</span> (Yalnızca Sayı)</label>
+      <input 
+        type="text" 
+        id="ceraimNo" 
+        placeholder="Örn: 1452" 
+        inputmode="numeric" 
+        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+      >
+    </div>
 
-    document.addEventListener("DOMContentLoaded", () => {
-      updateSavedCount();
-    });
+    <!-- Olay Yeri Adresi -->
+    <div class="form-group">
+      <label for="adres">Olay Yeri Adresi <span class="req">*</span></label>
+      <input type="text" id="adres" placeholder="Mahalle, Cadde, Sokak, Bina No..." required>
+    </div>
 
-    function getSavedReports() {
-      const data = localStorage.getItem(STORAGE_KEY);
-      return data ? JSON.parse(data) : [];
-    }
+    <!-- İnceleme Notları & Sesle Metin Ekleme -->
+    <div class="form-group">
+      <label for="notlar">İnceleme Genel Notları <span class="req">*</span></label>
+      <button type="button" class="btn btn-voice" onclick="startSpeechRecognition()">🎤 Sesle Not Ekle</button>
+      <textarea id="notlar" rows="3" placeholder="Olay yeri genel durumu, hava/aydınlatma şartları vb..." required></textarea>
+    </div>
 
-    function saveReportsToStorage(reports) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
-      updateSavedCount();
-    }
+    <!-- BULGULAR MODÜLÜ (Ayrı Sütun/Liste Alanı) -->
+    <div class="section-title">Olay Yeri Bulguları</div>
+    <div id="bulgularContainer">
+      <!-- Dinamik Bulgu Satırları Buraya Eklenecek -->
+    </div>
+    <button type="button" class="btn btn-add" onclick="addBulguRow()">➕ Yeni Bulgu Ekle</button>
 
-    function updateSavedCount() {
-      const reports = getSavedReports();
-      document.getElementById('savedCount').textContent = reports.length;
-    }
+    <br><br>
+    <button type="button" class="btn" onclick="generateReport()">Raporu Oluştur</button>
+  </form>
 
-    // "Şahıs Yok" Otomatik Doldurma
-    document.getElementById('sifat').addEventListener('change', function() {
-      const adSoyadInput = document.getElementById('adSoyad');
-      const tcNoInput = document.getElementById('tcNo');
-      if (this.value === 'Şahıs Yok') {
-        adSoyadInput.value = 'Kamu Hukuku';
-        tcNoInput.value = '-';
-      } else {
-        if (adSoyadInput.value === 'Kamu Hukuku') adSoyadInput.value = '';
-        if (tcNoInput.value === '-') tcNoInput.value = '';
-      }
-    });
+  <!-- Oluşturulan Rapor Metni Çıktısı -->
+  <div id="reportResult" class="report-output hidden"></div>
+</div>
 
-    // Ses Tanıma
-    const micBtn = document.getElementById('micBtn');
-    const notlar = document.getElementById('notlar');
-    let recognition = null;
-    let isListening = false;
+<script>
+  let bulguCounter = 0;
 
-    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognition = new SpeechRecognition();
-      recognition.lang = 'tr-TR';
-      recognition.continuous = true;
+  // Sayfa yüklendiğinde varsayılan 1 adet Bulgu satırı ekle
+  window.onload = function() {
+    addBulguRow("1");
+  };
 
-      recognition.onresult = (event) => {
-        let transcript = '';
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          transcript += event.results[i][0].transcript;
-        }
-        notlar.value += (notlar.value ? ' ' : '') + transcript;
-      };
+  // 1. Ceraim No sekmesinin dinamik görünürlük mantığı
+  function toggleCeraimNo() {
+    const ekipSelect = document.getElementById('talepEdenEkip');
+    const ceraimContainer = document.getElementById('ceraimContainer');
+    const ceraimInput = document.getElementById('ceraimNo');
 
-      recognition.onerror = () => stopListening();
-      recognition.onend = () => { if (isListening) stopListening(); };
-
-      micBtn.addEventListener('click', () => {
-        if (!isListening) {
-          recognition.start();
-          isListening = true;
-          micBtn.classList.remove('btn-outline-danger');
-          micBtn.classList.add('recording');
-          micBtn.innerHTML = '<i class="fa-solid fa-circle-stop me-1"></i> Dinleniyor...';
-        } else {
-          stopListening();
-        }
-      });
+    if (ekipSelect.value.trim() !== "") {
+      ceraimContainer.classList.remove('hidden');
+      ceraimInput.setAttribute('required', 'true');
     } else {
-      micBtn.disabled = true;
-      micBtn.innerHTML = 'Desteklenmiyor';
+      ceraimContainer.classList.add('hidden');
+      ceraimInput.removeAttribute('required');
+      ceraimInput.value = '';
+    }
+  }
+
+  // 2. Dinamik Bulgu Satırı Ekleme Fonksiyonu (1, 1-1, 1-2 formatlarını destekler)
+  function addBulguRow(defaultNo = "") {
+    bulguCounter++;
+    const container = document.getElementById('bulgularContainer');
+    
+    const rowId = `bulgu_row_${bulguCounter}`;
+    const bulguCard = document.createElement('div');
+    bulguCard.className = 'bulgu-card';
+    bulguCard.id = rowId;
+
+    bulguCard.innerHTML = `
+      <div class="bulgu-row-no">
+        <label style="font-size: 12px;">Bulgu No</label>
+        <input type="text" class="bulgu-no-input" placeholder="Örn: 1 veya 1-1" value="${defaultNo}">
+      </div>
+      <div class="bulgu-row-tanim">
+        <label style="font-size: 12px;">Bulgunun Tanımı</label>
+        <input type="text" class="bulgu-tanim-input" placeholder="Örn: Deforme olmuş kovan / Parmak izi">
+      </div>
+      <div class="bulgu-row-yer">
+        <label style="font-size: 12px;">Bulgunun Yeri</label>
+        <input type="text" class="bulgu-yer-input" placeholder="Örn: Salondaki sehpanın 20 cm solunda">
+      </div>
+      <div>
+        <button type="button" class="btn-remove" onclick="removeBulguRow('${rowId}')" title="Bulguyu Sil">✕</button>
+      </div>
+    `;
+
+    container.appendChild(bulguCard);
+  }
+
+  // Bulgu Satırını Silme
+  function removeBulguRow(rowId) {
+    const row = document.getElementById(rowId);
+    if (row) {
+      row.remove();
+    }
+  }
+
+  // 3. Sesle Yazdırma (Voice-to-Text) Entegrasyonu
+  function startSpeechRecognition() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      alert("Tarayıcınız sesle yazdırma özelliğini desteklememektedir.");
+      return;
+    }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'tr-TR';
+    recognition.interimResults = false;
+
+    recognition.onstart = function() {
+      alert("Dinleniyor... Konuşabilirsiniz.");
+    };
+
+    recognition.onresult = function(event) {
+      const transcript = event.results[0][0].transcript;
+      const notlarArea = document.getElementById('notlar');
+      notlarArea.value += (notlarArea.value ? " " : "") + transcript;
+    };
+
+    recognition.onerror = function(event) {
+      alert("Ses tanıma hatası oluştu: " + event.error);
+    };
+
+    recognition.start();
+  }
+
+  // 4. Resmi Rapor Oluşturucu Mantığı
+  function generateReport() {
+    const ekipKodu = document.getElementById('ekipKodu').value;
+    const tarihSaat = document.getElementById('tarihSaat').value;
+    const olayTuru = document.getElementById('olayTuru').value;
+    const talepEkip = document.getElementById('talepEdenEkip').value;
+    const ceraimNo = document.getElementById('ceraimNo').value;
+    const adres = document.getElementById('adres').value;
+    const notlar = document.getElementById('notlar').value;
+
+    if (!ekipKodu || !tarihSaat || !olayTuru || !adres || !notlar) {
+      alert("Lütfen zorunlu alanları doldurunuz.");
+      return;
     }
 
-    function stopListening() {
-      if (recognition && isListening) recognition.stop();
-      isListening = false;
-      micBtn.classList.remove('recording');
-      micBtn.classList.add('btn-outline-danger');
-      micBtn.innerHTML = '<i class="fa-solid fa-microphone me-1"></i> Sesle Yaz';
+    if (talepEkip && !ceraimNo) {
+      alert("Talep eden ekip seçildiği için Ceraim No girilmesi zorunludur.");
+      return;
     }
 
-    // Metin Formatı Oluşturucu (Kopyalamak İçin)
-    function buildPlainText(p) {
-      return `========================================
-T.C. EMNİYET MÜDÜRLÜĞÜ
-OLAY YERİ İNCELEME RAPORU
-Tarih: ${p.createdDate}
-========================================
+    // Bulguları Toplama
+    const bulguRows = document.querySelectorAll('.bulgu-card');
+    let bulgularMetni = "";
+    
+    if (bulguRows.length > 0) {
+      bulgularMetni += "\nOLAY YERİNDE ELDE EDİLEN BULGULAR:\n";
+      let count = 0;
+      bulguRows.forEach((row) => {
+        const no = row.querySelector('.bulgu-no-input').value.trim();
+        const tanim = row.querySelector('.bulgu-tanim-input').value.trim();
+        const yer = row.querySelector('.bulgu-yer-input').value.trim();
 
-1. OLAY VE EKİP BİLGİLERİ
-----------------------------------------
-Olay Adı       : ${p.olayAdi || '-'}
-Bildiriliş Saati: ${p.bildirilisSaati || '-'}
-İntikal Saati   : ${p.intikalSaati || '-'}
-Talep Eden Ekip : ${p.ekipKodu || '-'}
-Olay Adresi     : ${p.olayAdresi || '-'}
-
-2. İLGİLİ ŞAHIS BİLGİLERİ
-----------------------------------------
-T.C. Kimlik No : ${p.tcNo || '-'}
-Adı Soyadı     : ${p.adSoyad || '-'}
-Olaydaki Sıfatı : ${p.sifat || '-'}
-
-3. OLAY YERİ NOTLARI VE İNCELEME DETAYLARI
-----------------------------------------
-${p.notlar || 'Herhangi bir not girilmedi.'}
-
-========================================
-Düzenleyen: OYİ Ekibi`;
-    }
-
-    // HTML Yazdırma Formatı (PDF / Yazdır İçin)
-    function buildHtmlPrint(p) {
-      return `
-        <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px;">
-          <h2 style="margin: 0; font-size: 16pt;">T.C. EMNİYET MÜDÜRLÜĞÜ</h2>
-          <h3 style="margin: 4px 0 0 0; font-size: 13pt;">OLAY YERİ İNCELEME RAPORU</h3>
-          <p style="margin: 4px 0 0 0; font-size: 9pt;">Tarih: ${p.createdDate}</p>
-        </div>
-
-        <h4 style="margin-bottom: 6px; font-size: 10pt; text-transform: uppercase;">1. Olay ve Ekip Bilgileri</h4>
-        <table>
-          <tr><th style="width:30%;">Olay Adı:</th><td>${p.olayAdi || '-'}</td></tr>
-          <tr><th>Bildiriliş Saati:</th><td>${p.bildirilisSaati || '-'}</td></tr>
-          <tr><th>İntikal Saati:</th><td>${p.intikalSaati || '-'}</td></tr>
-          <tr><th>Talep Eden Ekip:</th><td>${p.ekipKodu || '-'}</td></tr>
-          <tr><th>Olay Adresi:</th><td>${p.olayAdresi || '-'}</td></tr>
-        </table>
-
-        <h4 style="margin-bottom: 6px; font-size: 10pt; text-transform: uppercase;">2. Şahıs Bilgileri</h4>
-        <table>
-          <tr><th style="width:30%;">T.C. Kimlik No:</th><td>${p.tcNo || '-'}</td></tr>
-          <tr><th>Ad Soyad:</th><td>${p.adSoyad || '-'}</td></tr>
-          <tr><th>Olaydaki Sıfatı:</th><td>${p.sifat || '-'}</td></tr>
-        </table>
-
-        <h4 style="margin-bottom: 6px; font-size: 10pt; text-transform: uppercase;">3. Notlar ve İnceleme Detayları</h4>
-        <div style="border: 1px solid #000; padding: 10px; min-height: 100px; font-size: 10pt; white-space: pre-wrap;">
-          ${p.notlar || 'Herhangi bir not girilmedi.'}
-        </div>
-
-        <table style="width: 100%; margin-top: 40px; border: none;">
-          <tr style="border: none;">
-            <td style="width: 50%; border: none; text-align: center;">
-              <strong>Raporu Düzenleyen</strong><br><br><br>İmza / Mühür
-            </td>
-            <td style="width: 50%; border: none; text-align: center;">
-              <strong>Ekip Amiri</strong><br><br><br>İmza
-            </td>
-          </tr>
-        </table>
-      `;
-    }
-
-    // Form Gönderme
-    document.getElementById('raporForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const editingId = document.getElementById('editingId').value;
-
-      currentPayload = {
-        id: editingId ? Number(editingId) : Date.now(),
-        olayAdi: document.getElementById('olayAdi').value,
-        bildirilisSaati: document.getElementById('bildirilisSaati').value,
-        intikalSaati: document.getElementById('intikalSaati').value,
-        ekipKodu: document.getElementById('ekipKodu').value,
-        olayAdresi: document.getElementById('olayAdresi').value,
-        tcNo: document.getElementById('tcNo').value,
-        adSoyad: document.getElementById('adSoyad').value,
-        sifat: document.getElementById('sifat').value,
-        notlar: document.getElementById('notlar').value,
-        createdDate: new Date().toLocaleDateString('tr-TR')
-      };
-
-      // Hafızaya Sakla
-      let reports = getSavedReports();
-      if (editingId) {
-        reports = reports.map(r => r.id === currentPayload.id ? currentPayload : r);
-      } else {
-        reports.unshift(currentPayload);
-      }
-      saveReportsToStorage(reports);
-
-      // Metni Ekrana Bas
-      const textVal = buildPlainText(currentPayload);
-      document.getElementById('reportTextOutput').textContent = textVal;
-      document.getElementById('outputContainer').classList.remove('d-none');
-
-      const statusAlert = document.getElementById('statusAlert');
-      statusAlert.className = "alert alert-success mt-3 text-center bg-dark text-success border-success";
-      statusAlert.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i> Rapor kaydedildi ve aşağıda oluşturuldu!';
-      statusAlert.classList.remove('d-none');
-      setTimeout(() => statusAlert.classList.add('d-none'), 3000);
-
-      cancelEdit();
-    });
-
-    // Metni Kopyalama Fonksiyonu
-    function copyReportText() {
-      const text = document.getElementById('reportTextOutput').textContent;
-      navigator.clipboard.writeText(text).then(() => {
-        alert("Rapor metni panoya kopyalandı!");
-      }).catch(() => {
-        alert("Kopyalama başarısız oldu. Lütfen metni elle seçip kopyalayın.");
+        if (tanim || yer) {
+          count++;
+          const displayNo = no ? no : count.toString();
+          bulgularMetni += `  - BULGU NO ${displayNo}: ${tanim || "Tanım belirtilmedi"} [Bulunduğu Yer: ${yer || "Belirtilmedi"}]\n`;
+        }
       });
-    }
 
-    // Yazdır / PDF İndir İşlevi (Yerel Tarayıcı Motoru)
-    function printReport(payload = null) {
-      const p = payload || currentPayload;
-      if (!p) return;
-
-      const printArea = document.getElementById('printArea');
-      printArea.innerHTML = buildHtmlPrint(p);
-      printArea.classList.remove('d-none');
-      
-      window.print();
-
-      printArea.classList.add('d-none');
-    }
-
-    // Kaydedilen Raporlar Listesi
-    function renderReportList() {
-      const container = document.getElementById('reportListContainer');
-      const reports = getSavedReports();
-
-      if (reports.length === 0) {
-        container.innerHTML = `
-          <div class="text-center py-5 text-muted">
-            <i class="fa-regular fa-folder-open fa-3x mb-3 opacity-50"></i>
-            <p class="mb-0">Henüz kaydedilmiş rapor bulunmuyor.</p>
-          </div>
-        `;
-        return;
+      if (count === 0) {
+        bulgularMetni += "  (Olay yerinde herhangi bir bulgu kaydı girilmemiştir.)\n";
       }
-
-      container.innerHTML = reports.map(r => `
-        <div class="report-card">
-          <div class="d-flex justify-content-between align-items-start mb-2">
-            <div>
-              <h6 class="fw-bold text-white mb-1">${escapeHtml(r.olayAdi)}</h6>
-              <small class="text-secondary d-block"><i class="fa-regular fa-calendar me-1"></i> ${r.createdDate} | <i class="fa-solid fa-user-shield me-1"></i> ${escapeHtml(r.ekipKodu)}</small>
-            </div>
-            <span class="badge bg-primary bg-opacity-20 text-info border border-info border-opacity-25">${escapeHtml(r.sifat || 'Belirtilmedi')}</span>
-          </div>
-          <p class="text-light small mb-3 text-truncate" style="opacity: 0.85;">
-            <i class="fa-solid fa-location-dot text-danger me-1"></i> ${escapeHtml(r.olayAdresi)}
-          </p>
-          <div class="d-flex gap-2">
-            <button class="btn btn-sm btn-outline-info flex-grow-1" onclick="editReport(${r.id})">
-              <i class="fa-solid fa-pen-to-square me-1"></i> Düzenle
-            </button>
-            <button class="btn btn-sm btn-outline-success" onclick="printReportById(${r.id})">
-              <i class="fa-solid fa-print me-1"></i> Yazdır / PDF
-            </button>
-            <button class="btn btn-sm btn-outline-danger" onclick="deleteReport(${r.id})">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </div>
-        </div>
-      `).join('');
+    } else {
+      bulgularMetni += "\nOLAY YERİNDE ELDE EDİLEN BULGULAR:\n  (Herhangi bir bulgu kaydı bulunmamaktadır.)\n";
     }
 
-    function printReportById(id) {
-      const reports = getSavedReports();
-      const report = reports.find(r => r.id === id);
-      if (report) printReport(report);
+    let talepMetni = "";
+    if (talepEkip && ceraimNo) {
+      talepMetni = `${talepEkip}'nin talebi ve ${ceraimNo} Ceraim sayılı dosyasına istinaden, `;
+    } else if (talepEkip) {
+      talepMetni = `${talepEkip}'nin talebine istinaden, `;
     }
 
-    function editReport(id) {
-      const reports = getSavedReports();
-      const report = reports.find(r => r.id === id);
-      if (!report) return;
+    const tarihFormatted = tarihSaat.replace('T', ' ');
 
-      document.getElementById('editingId').value = report.id;
-      document.getElementById('olayAdi').value = report.olayAdi || '';
-      document.getElementById('bildirilisSaati').value = report.bildirilisSaati || '';
-      document.getElementById('intikalSaati').value = report.intikalSaati || '';
-      document.getElementById('ekipKodu').value = report.ekipKodu || '';
-      document.getElementById('olayAdresi').value = report.olayAdresi || '';
-      document.getElementById('tcNo').value = report.tcNo || '';
-      document.getElementById('adSoyad').value = report.adSoyad || '';
-      document.getElementById('sifat').value = report.sifat || '';
-      document.getElementById('notlar').value = report.notlar || '';
+    const raporMetni = 
+`==================================================
+           T.C. EMNİYET MÜDÜRLÜĞÜ
+        OLAY YERİ İNCELEME RAPORU METNİ
+==================================================
 
-      document.getElementById('editingBanner').classList.remove('d-none');
-      document.getElementById('editingBanner').classList.add('d-flex');
+EKİP KODU : ${ekipKodu}
+TARIH/SAAT: ${tarihFormatted}
+OLAY TÜRÜ : ${olayTuru}
+ADRES     : ${adres}
 
-      const formTab = new bootstrap.Tab(document.getElementById('form-tab'));
-      formTab.show();
-    }
+RAPOR METNİ:
+${talepMetni}"${adres}" adresinde meydana gelen ${olayTuru} olayı ile ilgili olarak ${ekipKodu} numaralı OYİ ekibimizce belirtilen adreste inceleme çalışmalarına başlanmıştır.
 
-    function cancelEdit() {
-      document.getElementById('editingId').value = '';
-      document.getElementById('editingBanner').classList.add('d-none');
-      document.getElementById('editingBanner').classList.remove('d-flex');
-      document.getElementById('raporForm').reset();
-    }
+İNCELEME GENEL NOTLARI:
+${notlar}
+${bulgularMetni}
+İşbu rapor olay yerinde tanzim edilmiştir.`;
 
-    function deleteReport(id) {
-      if (confirm("Bu rapor kaydını silmek istediğinize emin misiniz?")) {
-        let reports = getSavedReports();
-        reports = reports.filter(r => r.id !== id);
-        saveReportsToStorage(reports);
-        renderReportList();
-      }
-    }
+    const reportResultDiv = document.getElementById('reportResult');
+    reportResultDiv.textContent = raporMetni;
+    reportResultDiv.classList.remove('hidden');
+    reportResultDiv.scrollIntoView({ behavior: 'smooth' });
+  }
+</script>
 
-    function escapeHtml(text) {
-      if (!text) return '';
-      return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-    }
-  </script>
 </body>
 </html>
