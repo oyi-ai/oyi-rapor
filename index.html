@@ -6,12 +6,10 @@
   <title>OYİ Rapor Asistanı - Saha Modu</title>
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- FontAwesome İkon Kütüphanesi -->
+  <!-- FontAwesome İkonlar -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Google Inter Yazı Tipi -->
+  <!-- Google Inter Font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <!-- html2pdf.js (PDF Oluşturucu Kütüphane) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <style>
     :root {
@@ -37,7 +35,6 @@
       border: 1px solid var(--border-color);
       border-radius: 20px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(10px);
     }
 
     .sub-card {
@@ -54,7 +51,6 @@
       border-radius: 10px;
       padding: 0.65rem 0.9rem;
       font-size: 0.92rem;
-      transition: all 0.25s ease;
     }
 
     .form-control:focus, .form-select:focus {
@@ -90,8 +86,6 @@
 
     .btn-tactical:hover {
       background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
-      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.6);
-      transform: translateY(-1px);
     }
 
     .btn-mic {
@@ -105,22 +99,12 @@
       background-color: #dc2626 !important;
       border-color: #ef4444 !important;
       color: #ffffff !important;
-      box-shadow: 0 0 15px rgba(220, 38, 38, 0.6);
     }
 
     @keyframes pulse-red {
-      0% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.03); opacity: 0.8; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    .pulse-dot {
-      animation: blink 1.5s infinite;
-    }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
+      0% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+      100% { transform: scale(1); }
     }
 
     .badge-tactical {
@@ -129,7 +113,6 @@
       border: 1px solid rgba(56, 189, 248, 0.4);
       font-size: 0.7rem;
       font-weight: 700;
-      letter-spacing: 0.5px;
     }
 
     .header-icon-box {
@@ -165,30 +148,68 @@
       padding: 14px;
       margin-bottom: 12px;
     }
+
+    .output-box {
+      background: #070d1d;
+      border: 1px solid var(--accent-cyan);
+      border-radius: 12px;
+      padding: 16px;
+      color: #f8fafc;
+      font-family: 'Courier New', Courier, monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    /* Yazdırma (Print / PDF) Stilleri */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printArea, #printArea * {
+        visibility: visible;
+      }
+      #printArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        color: #000 !important;
+        background: #fff !important;
+        padding: 20px;
+      }
+      #printArea table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 15px;
+      }
+      #printArea th, #printArea td {
+        border: 1px solid #000;
+        padding: 6px 10px;
+        font-size: 10pt;
+      }
+    }
   </style>
 </head>
 <body class="py-3 py-md-4">
-  <div class="container" style="max-width: 540px;">
+  <div class="container" style="max-width: 560px;">
     <div class="main-card p-3 p-sm-4">
       
       <!-- Ortalanmış Header -->
       <div class="text-center mb-3 pb-3 border-bottom border-secondary border-opacity-25">
         <div class="d-flex justify-content-center mb-2">
           <span class="badge badge-tactical px-2 py-1 rounded-pill d-flex align-items-center gap-1">
-            <i class="fa-solid fa-circle text-success pulse-dot" style="font-size: 0.5rem;"></i> SAHA CANLI
+            <i class="fa-solid fa-circle text-success" style="font-size: 0.5rem;"></i> SAHA CANLI
           </span>
         </div>
 
         <div class="d-flex align-items-center justify-content-center gap-3">
-          <div class="header-icon-box shadow-sm" style="font-size: 1.5rem; line-height: 1;">
-            🇹🇷
-          </div>
-
+          <div class="header-icon-box shadow-sm" style="font-size: 1.5rem;">🇹🇷</div>
           <div>
             <h5 class="fw-bold mb-0 text-white text-uppercase" style="letter-spacing: 0.8px;">OYİ RAPOR ASİSTANI</h5>
             <small class="text-secondary" style="font-size: 0.72rem; letter-spacing: 0.5px;">OLAY YERİ İNCELEME SİSTEMİ</small>
           </div>
-
           <div class="header-icon-box text-info shadow-sm" style="font-size: 1.3rem;">
             <i class="fa-solid fa-fingerprint"></i>
           </div>
@@ -197,12 +218,12 @@
 
       <!-- Sekme Navigasyonu -->
       <ul class="nav nav-pills nav-justified mb-3" id="mainTabs" role="tablist">
-        <li class="nav-item" role="presentation">
+        <li class="nav-item">
           <button class="nav-link active" id="form-tab" data-bs-toggle="pill" data-bs-target="#form-section" type="button">
-            <i class="fa-solid fa-pen-to-square me-1"></i> Yeni Rapor
+            <i class="fa-solid fa-pen-to-square me-1"></i> Rapor Oluştur
           </button>
         </li>
-        <li class="nav-item" role="presentation">
+        <li class="nav-item">
           <button class="nav-link" id="list-tab" data-bs-toggle="pill" data-bs-target="#list-section" type="button" onclick="renderReportList()">
             <i class="fa-solid fa-folder-open me-1"></i> Kaydedilenler (<span id="savedCount">0</span>)
           </button>
@@ -217,55 +238,45 @@
             <input type="hidden" id="editingId" value="">
 
             <div id="editingBanner" class="alert alert-warning py-1 px-2 mb-3 d-none align-items-center justify-content-between" style="font-size: 0.8rem;">
-              <span><i class="fa-solid fa-pen me-1"></i> Var olan rapor düzenleniyor...</span>
+              <span><i class="fa-solid fa-pen me-1"></i> Kayıtlı rapor düzenleniyor...</span>
               <button type="button" class="btn btn-sm btn-link text-dark fw-bold p-0 text-decoration-none" onclick="cancelEdit()">Vazgeç</button>
             </div>
 
             <!-- Olay Adı -->
             <div class="mb-3">
-              <label class="form-label text-uppercase">
-                <i class="fa-solid fa-clipboard-list me-1 text-info"></i> Olay Adı
-              </label>
+              <label class="form-label text-uppercase"><i class="fa-solid fa-clipboard-list me-1 text-info"></i> Olay Adı</label>
               <input type="text" id="olayAdi" class="form-control" placeholder="Örn: Evden Hırsızlık, Ateşli Silah" required>
             </div>
 
             <!-- Saatler -->
             <div class="row g-2 mb-3">
               <div class="col-6">
-                <label class="form-label text-uppercase">
-                  <i class="fa-solid fa-clock me-1 text-info"></i> Bildiriliş Saati
-                </label>
+                <label class="form-label text-uppercase"><i class="fa-solid fa-clock me-1 text-info"></i> Bildiriliş Saati</label>
                 <input type="time" id="bildirilisSaati" class="form-control" required>
               </div>
               <div class="col-6">
-                <label class="form-label text-uppercase">
-                  <i class="fa-solid fa-route me-1 text-info"></i> İntikal Saati
-                </label>
+                <label class="form-label text-uppercase"><i class="fa-solid fa-route me-1 text-info"></i> İntikal Saati</label>
                 <input type="time" id="intikalSaati" class="form-control" required>
               </div>
             </div>
 
             <!-- Ekip Kodu -->
             <div class="mb-3">
-              <label class="form-label text-uppercase">
-                <i class="fa-solid fa-user-shield me-1 text-info"></i> Talep Eden Ekip Kodu
-              </label>
+              <label class="form-label text-uppercase"><i class="fa-solid fa-user-shield me-1 text-info"></i> Talep Eden Ekip Kodu</label>
               <input type="text" id="ekipKodu" class="form-control" placeholder="Örn: 4512 veya Asayiş Ekipleri" required>
             </div>
 
             <!-- Olay Adresi -->
             <div class="mb-3">
-              <label class="form-label text-uppercase">
-                <i class="fa-solid fa-location-dot me-1 text-info"></i> Olay Adresi
-              </label>
+              <label class="form-label text-uppercase"><i class="fa-solid fa-location-dot me-1 text-info"></i> Olay Adresi</label>
               <textarea id="olayAdresi" class="form-control" rows="2" placeholder="Mahalle, sokak, bina no, ilçe..." required></textarea>
             </div>
 
-            <!-- Şahıs Bilgileri Sub-Card -->
+            <!-- Şahıs Bilgileri -->
             <div class="sub-card mb-3">
               <div class="d-flex align-items-center gap-2 mb-3">
                 <i class="fa-solid fa-id-card-clip text-info"></i>
-                <h6 class="fw-bold mb-0 text-white text-uppercase" style="font-size: 0.85rem; letter-spacing: 0.5px;">İlgili Şahıs Bilgileri</h6>
+                <h6 class="fw-bold mb-0 text-white text-uppercase" style="font-size: 0.85rem;">İlgili Şahıs Bilgileri</h6>
               </div>
               
               <div class="mb-2">
@@ -295,28 +306,40 @@
             <!-- Büyütülmüş Notlar & Sesle Yaz -->
             <div class="mb-3">
               <div class="d-flex justify-content-between align-items-center mb-2">
-                <label class="form-label text-uppercase mb-0">
-                  <i class="fa-solid fa-pen-to-square me-1 text-info"></i> Notlar ve Gözlemler
-                </label>
+                <label class="form-label text-uppercase mb-0"><i class="fa-solid fa-pen-to-square me-1 text-info"></i> Olay Yeri Notları</label>
                 <button type="button" id="micBtn" class="btn btn-outline-danger btn-sm rounded-pill px-3 btn-mic">
                   <i class="fa-solid fa-microphone me-1"></i> Sesle Yaz
                 </button>
               </div>
-              <textarea id="notlar" class="form-control" rows="6" style="min-height: 140px;" placeholder="Olay yeri gözlemleri, delil detayları, iz ve emare tanımlamaları veya ilave notlar..."></textarea>
+              <textarea id="notlar" class="form-control" rows="7" style="min-height: 160px;" placeholder="Olay yeri gözlemleri, bulgular, delil detayları veya ilave notlar..."></textarea>
             </div>
 
             <!-- Submit Button -->
             <button type="submit" id="submitBtn" class="btn btn-tactical w-100 mt-2">
-              <i class="fa-solid fa-file-pdf me-2"></i> RAPORU KAYDET & PDF İNDİR
+              <i class="fa-solid fa-floppy-disk me-2"></i> RAPORU KAYDET VE GÖRÜNTÜLE
             </button>
           </form>
+
+          <!-- Oluşturulan Rapor Metni ve Aksiyon Kutusu -->
+          <div id="outputContainer" class="mt-4 d-none">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="fw-bold text-info" style="font-size: 0.85rem;"><i class="fa-solid fa-file-lines me-1"></i> HAZIR RAPOR METNİ</span>
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-light" onclick="copyReportText()">
+                  <i class="fa-solid fa-copy me-1"></i> Metni Kopyala
+                </button>
+                <button class="btn btn-sm btn-success" onclick="printReport()">
+                  <i class="fa-solid fa-print me-1"></i> Yazdır / PDF
+                </button>
+              </div>
+            </div>
+            <div id="reportTextOutput" class="output-box"></div>
+          </div>
         </div>
 
         <!-- SEKME 2: KAYDEDİLEN RAPORLAR LİSTESİ -->
         <div class="tab-pane fade" id="list-section">
-          <div id="reportListContainer">
-            <!-- Kaydedilen raporlar JavaScript ile buraya yüklenecek -->
-          </div>
+          <div id="reportListContainer"></div>
         </div>
 
       </div>
@@ -325,13 +348,16 @@
     </div>
   </div>
 
+  <!-- Gizli Yazdırma / PDF Hazırlama Alanı -->
+  <div id="printArea" class="d-none"></div>
+
   <!-- Bootstrap 5 JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
     const STORAGE_KEY = "oyi_saved_reports";
+    let currentPayload = null;
 
-    // Sayfa Yüklendiğinde Kayıt Sayısını Güncelle
     document.addEventListener("DOMContentLoaded", () => {
       updateSavedCount();
     });
@@ -351,11 +377,10 @@
       document.getElementById('savedCount').textContent = reports.length;
     }
 
-    // Sıfat "Şahıs Yok" Seçilince Otomatik Doldurma
+    // "Şahıs Yok" Otomatik Doldurma
     document.getElementById('sifat').addEventListener('change', function() {
       const adSoyadInput = document.getElementById('adSoyad');
       const tcNoInput = document.getElementById('tcNo');
-      
       if (this.value === 'Şahıs Yok') {
         adSoyadInput.value = 'Kamu Hukuku';
         tcNoInput.value = '-';
@@ -365,7 +390,7 @@
       }
     });
 
-    // Ses Tanıma Entegrasyonu
+    // Ses Tanıma
     const micBtn = document.getElementById('micBtn');
     const notlar = document.getElementById('notlar');
     let recognition = null;
@@ -376,7 +401,6 @@
       recognition = new SpeechRecognition();
       recognition.lang = 'tr-TR';
       recognition.continuous = true;
-      recognition.interimResults = true;
 
       recognition.onresult = (event) => {
         let transcript = '';
@@ -402,7 +426,7 @@
       });
     } else {
       micBtn.disabled = true;
-      micBtn.innerHTML = '<i class="fa-solid fa-microphone-slash me-1"></i> Desteklenmiyor';
+      micBtn.innerHTML = 'Desteklenmiyor';
     }
 
     function stopListening() {
@@ -413,121 +437,85 @@
       micBtn.innerHTML = '<i class="fa-solid fa-microphone me-1"></i> Sesle Yaz';
     }
 
-    // PDF Oluşturma Fonksiyonu
-    async function generatePDF(payload) {
-      const today = payload.createdDate || new Date().toLocaleDateString('tr-TR');
-      const pdfContainer = document.createElement('div');
-      
-      pdfContainer.style.position = 'fixed';
-      pdfContainer.style.top = '0';
-      pdfContainer.style.left = '0';
-      pdfContainer.style.zIndex = '-99999';
-      pdfContainer.style.width = '210mm';
-      pdfContainer.style.boxSizing = 'border-box';
-      pdfContainer.style.padding = '20mm';
-      pdfContainer.style.color = '#000000';
-      pdfContainer.style.backgroundColor = '#ffffff';
-      pdfContainer.style.fontFamily = 'Arial, sans-serif';
+    // Metin Formatı Oluşturucu (Kopyalamak İçin)
+    function buildPlainText(p) {
+      return `========================================
+T.C. EMNİYET MÜDÜRLÜĞÜ
+OLAY YERİ İNCELEME RAPORU
+Tarih: ${p.createdDate}
+========================================
 
-      const formattedNotlar = payload.notlar 
-        ? payload.notlar.replace(/\n/g, '<br>') 
-        : 'Herhangi bir not girilmedi.';
+1. OLAY VE EKİP BİLGİLERİ
+----------------------------------------
+Olay Adı       : ${p.olayAdi || '-'}
+Bildiriliş Saati: ${p.bildirilisSaati || '-'}
+İntikal Saati   : ${p.intikalSaati || '-'}
+Talep Eden Ekip : ${p.ekipKodu || '-'}
+Olay Adresi     : ${p.olayAdresi || '-'}
 
-      pdfContainer.innerHTML = `
-        <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 12px; margin-bottom: 20px;">
-          <h2 style="margin: 0; font-size: 18pt; font-weight: bold;">T.C. EMNİYET MÜDÜRLÜĞÜ</h2>
-          <h3 style="margin: 5px 0 0 0; font-size: 14pt; color: #333;">OLAY YERİ İNCELEME RAPORU</h3>
-          <p style="margin: 5px 0 0 0; font-size: 10pt; color: #666;">Tarih: ${today}</p>
+2. İLGİLİ ŞAHIS BİLGİLERİ
+----------------------------------------
+T.C. Kimlik No : ${p.tcNo || '-'}
+Adı Soyadı     : ${p.adSoyad || '-'}
+Olaydaki Sıfatı : ${p.sifat || '-'}
+
+3. OLAY YERİ NOTLARI VE İNCELEME DETAYLARI
+----------------------------------------
+${p.notlar || 'Herhangi bir not girilmedi.'}
+
+========================================
+Düzenleyen: OYİ Ekibi`;
+    }
+
+    // HTML Yazdırma Formatı (PDF / Yazdır İçin)
+    function buildHtmlPrint(p) {
+      return `
+        <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px;">
+          <h2 style="margin: 0; font-size: 16pt;">T.C. EMNİYET MÜDÜRLÜĞÜ</h2>
+          <h3 style="margin: 4px 0 0 0; font-size: 13pt;">OLAY YERİ İNCELEME RAPORU</h3>
+          <p style="margin: 4px 0 0 0; font-size: 9pt;">Tarih: ${p.createdDate}</p>
         </div>
 
-        <h4 style="margin-bottom: 8px; font-size: 11pt; text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 4px;">1. Olay ve Ekip Bilgileri</h4>
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 10pt;" border="1" cellpadding="6">
-          <tr>
-            <td style="width: 30%; font-weight: bold; background: #f2f2f2;">Olay Adı:</td>
-            <td>${payload.olayAdi || '-'}</td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold; background: #f2f2f2;">Bildiriliş Saati:</td>
-            <td>${payload.bildirilisSaati || '-'}</td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold; background: #f2f2f2;">İntikal Saati:</td>
-            <td>${payload.intikalSaati || '-'}</td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold; background: #f2f2f2;">Talep Eden Ekip:</td>
-            <td>${payload.ekipKodu || '-'}</td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold; background: #f2f2f2;">Olay Adresi:</td>
-            <td>${payload.olayAdresi || '-'}</td>
-          </tr>
+        <h4 style="margin-bottom: 6px; font-size: 10pt; text-transform: uppercase;">1. Olay ve Ekip Bilgileri</h4>
+        <table>
+          <tr><th style="width:30%;">Olay Adı:</th><td>${p.olayAdi || '-'}</td></tr>
+          <tr><th>Bildiriliş Saati:</th><td>${p.bildirilisSaati || '-'}</td></tr>
+          <tr><th>İntikal Saati:</th><td>${p.intikalSaati || '-'}</td></tr>
+          <tr><th>Talep Eden Ekip:</th><td>${p.ekipKodu || '-'}</td></tr>
+          <tr><th>Olay Adresi:</th><td>${p.olayAdresi || '-'}</td></tr>
         </table>
 
-        <h4 style="margin-bottom: 8px; font-size: 11pt; text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 4px;">2. Şahıs Bilgileri</h4>
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 10pt;" border="1" cellpadding="6">
-          <tr>
-            <td style="width: 30%; font-weight: bold; background: #f2f2f2;">T.C. Kimlik No:</td>
-            <td>${payload.tcNo || '-'}</td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold; background: #f2f2f2;">Ad Soyad:</td>
-            <td>${payload.adSoyad || '-'}</td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold; background: #f2f2f2;">Olaydaki Sıfatı:</td>
-            <td>${payload.sifat || '-'}</td>
-          </tr>
+        <h4 style="margin-bottom: 6px; font-size: 10pt; text-transform: uppercase;">2. Şahıs Bilgileri</h4>
+        <table>
+          <tr><th style="width:30%;">T.C. Kimlik No:</th><td>${p.tcNo || '-'}</td></tr>
+          <tr><th>Ad Soyad:</th><td>${p.adSoyad || '-'}</td></tr>
+          <tr><th>Olaydaki Sıfatı:</th><td>${p.sifat || '-'}</td></tr>
         </table>
 
-        <h4 style="margin-bottom: 8px; font-size: 11pt; text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 4px;">3. Olay Yeri Notları ve İnceleme Detayları</h4>
-        <div style="border: 1px solid #000; padding: 12px; min-height: 120px; font-size: 10pt; background: #fafafa; margin-bottom: 40px; line-height: 1.5; word-wrap: break-word;">
-          ${formattedNotlar}
+        <h4 style="margin-bottom: 6px; font-size: 10pt; text-transform: uppercase;">3. Notlar ve İnceleme Detayları</h4>
+        <div style="border: 1px solid #000; padding: 10px; min-height: 100px; font-size: 10pt; white-space: pre-wrap;">
+          ${p.notlar || 'Herhangi bir not girilmedi.'}
         </div>
 
-        <table style="width: 100%; margin-top: 40px; font-size: 10pt; text-align: center; border: none;">
-          <tr>
-            <td style="width: 50%; border: none;">
-              <strong>Raporu Düzenleyen</strong><br><br><br><br>
-              İmza / Mühür
+        <table style="width: 100%; margin-top: 40px; border: none;">
+          <tr style="border: none;">
+            <td style="width: 50%; border: none; text-align: center;">
+              <strong>Raporu Düzenleyen</strong><br><br><br>İmza / Mühür
             </td>
-            <td style="width: 50%; border: none;">
-              <strong>Ekip Amiri</strong><br><br><br><br>
-              İmza
+            <td style="width: 50%; border: none; text-align: center;">
+              <strong>Ekip Amiri</strong><br><br><br>İmza
             </td>
           </tr>
         </table>
       `;
-
-      document.body.appendChild(pdfContainer);
-
-      const safeFileName = (payload.olayAdi || 'Rapor').replace(/[^a-zA-Z0-9çğıöşüÇĞİÖŞÜ]/g, '_');
-      const opt = {
-        margin:       0,
-        filename:     `OYI_Raporu_${safeFileName}_${today.replace(/\./g, '-')}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, logging: false, useCORS: true },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-
-      try {
-        await html2pdf().set(opt).from(pdfContainer).save();
-      } finally {
-        document.body.removeChild(pdfContainer);
-      }
     }
 
-    // Form Gönderme ve Kaydetme
-    document.getElementById('raporForm').addEventListener('submit', async function(e) {
+    // Form Gönderme
+    document.getElementById('raporForm').addEventListener('submit', function(e) {
       e.preventDefault();
-      const submitBtn = document.getElementById('submitBtn');
-      const statusAlert = document.getElementById('statusAlert');
       const editingId = document.getElementById('editingId').value;
-      
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> İşleniyor...';
 
-      const payload = {
+      currentPayload = {
         id: editingId ? Number(editingId) : Date.now(),
         olayAdi: document.getElementById('olayAdi').value,
         bildirilisSaati: document.getElementById('bildirilisSaati').value,
@@ -541,38 +529,54 @@
         createdDate: new Date().toLocaleDateString('tr-TR')
       };
 
-      try {
-        // Yerel Hafızaya Sakla / Güncelle
-        let reports = getSavedReports();
-        if (editingId) {
-          reports = reports.map(r => r.id === payload.id ? payload : r);
-        } else {
-          reports.unshift(payload);
-        }
-        saveReportsToStorage(reports);
-
-        // PDF İndir
-        await generatePDF(payload);
-
-        statusAlert.className = "alert alert-success mt-3 text-center bg-dark text-success border-success";
-        statusAlert.innerHTML = editingId 
-          ? '<i class="fa-solid fa-circle-check me-2"></i> Rapor güncellendi ve PDF indirildi!'
-          : '<i class="fa-solid fa-circle-check me-2"></i> Rapor yerel hafızaya kaydedildi ve PDF indirildi!';
-        
-        statusAlert.classList.remove('d-none');
-        cancelEdit();
-      } catch (err) {
-        statusAlert.className = "alert alert-danger mt-3 text-center bg-dark text-danger border-danger";
-        statusAlert.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-2"></i> Bir işlem sırasında hata oluştu.';
-        statusAlert.classList.remove('d-none');
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fa-solid fa-file-pdf me-2"></i> RAPORU KAYDET & PDF İNDİR';
-        setTimeout(() => statusAlert.classList.add('d-none'), 4000);
+      // Hafızaya Sakla
+      let reports = getSavedReports();
+      if (editingId) {
+        reports = reports.map(r => r.id === currentPayload.id ? currentPayload : r);
+      } else {
+        reports.unshift(currentPayload);
       }
+      saveReportsToStorage(reports);
+
+      // Metni Ekrana Bas
+      const textVal = buildPlainText(currentPayload);
+      document.getElementById('reportTextOutput').textContent = textVal;
+      document.getElementById('outputContainer').classList.remove('d-none');
+
+      const statusAlert = document.getElementById('statusAlert');
+      statusAlert.className = "alert alert-success mt-3 text-center bg-dark text-success border-success";
+      statusAlert.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i> Rapor kaydedildi ve aşağıda oluşturuldu!';
+      statusAlert.classList.remove('d-none');
+      setTimeout(() => statusAlert.classList.add('d-none'), 3000);
+
+      cancelEdit();
     });
 
-    // Kaydedilen Raporları Ekrana Çizme
+    // Metni Kopyalama Fonksiyonu
+    function copyReportText() {
+      const text = document.getElementById('reportTextOutput').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Rapor metni panoya kopyalandı!");
+      }).catch(() => {
+        alert("Kopyalama başarısız oldu. Lütfen metni elle seçip kopyalayın.");
+      });
+    }
+
+    // Yazdır / PDF İndir İşlevi (Yerel Tarayıcı Motoru)
+    function printReport(payload = null) {
+      const p = payload || currentPayload;
+      if (!p) return;
+
+      const printArea = document.getElementById('printArea');
+      printArea.innerHTML = buildHtmlPrint(p);
+      printArea.classList.remove('d-none');
+      
+      window.print();
+
+      printArea.classList.add('d-none');
+    }
+
+    // Kaydedilen Raporlar Listesi
     function renderReportList() {
       const container = document.getElementById('reportListContainer');
       const reports = getSavedReports();
@@ -581,7 +585,7 @@
         container.innerHTML = `
           <div class="text-center py-5 text-muted">
             <i class="fa-regular fa-folder-open fa-3x mb-3 opacity-50"></i>
-            <p class="mb-0">Henüz kaydedilmiş bir rapor bulunmuyor.</p>
+            <p class="mb-0">Henüz kaydedilmiş rapor bulunmuyor.</p>
           </div>
         `;
         return;
@@ -592,19 +596,19 @@
           <div class="d-flex justify-content-between align-items-start mb-2">
             <div>
               <h6 class="fw-bold text-white mb-1">${escapeHtml(r.olayAdi)}</h6>
-              <small class="text-secondary d-block"><i class="fa-regular fa-calendar me-1"></i> Tarih: ${r.createdDate || '-'} | <i class="fa-solid fa-user-shield me-1"></i> Ekip: ${escapeHtml(r.ekipKodu)}</small>
+              <small class="text-secondary d-block"><i class="fa-regular fa-calendar me-1"></i> ${r.createdDate} | <i class="fa-solid fa-user-shield me-1"></i> ${escapeHtml(r.ekipKodu)}</small>
             </div>
-            <span class="badge bg-primary bg-opacity-20 text-info border border-info border-opacity-25" style="font-size: 0.7rem;">${escapeHtml(r.sifat || 'Sıfat Belirtilmedi')}</span>
+            <span class="badge bg-primary bg-opacity-20 text-info border border-info border-opacity-25">${escapeHtml(r.sifat || 'Belirtilmedi')}</span>
           </div>
-          <p class="text-light small mb-3 text-truncate" style="max-width: 100%; opacity: 0.85;">
+          <p class="text-light small mb-3 text-truncate" style="opacity: 0.85;">
             <i class="fa-solid fa-location-dot text-danger me-1"></i> ${escapeHtml(r.olayAdresi)}
           </p>
           <div class="d-flex gap-2">
             <button class="btn btn-sm btn-outline-info flex-grow-1" onclick="editReport(${r.id})">
               <i class="fa-solid fa-pen-to-square me-1"></i> Düzenle
             </button>
-            <button class="btn btn-sm btn-outline-success" onclick="downloadSinglePDF(${r.id})">
-              <i class="fa-solid fa-file-pdf me-1"></i> PDF
+            <button class="btn btn-sm btn-outline-success" onclick="printReportById(${r.id})">
+              <i class="fa-solid fa-print me-1"></i> Yazdır / PDF
             </button>
             <button class="btn btn-sm btn-outline-danger" onclick="deleteReport(${r.id})">
               <i class="fa-solid fa-trash"></i>
@@ -614,7 +618,12 @@
       `).join('');
     }
 
-    // Rapor Düzenleme Moduna Alma
+    function printReportById(id) {
+      const reports = getSavedReports();
+      const report = reports.find(r => r.id === id);
+      if (report) printReport(report);
+    }
+
     function editReport(id) {
       const reports = getSavedReports();
       const report = reports.find(r => r.id === id);
@@ -634,7 +643,6 @@
       document.getElementById('editingBanner').classList.remove('d-none');
       document.getElementById('editingBanner').classList.add('d-flex');
 
-      // Form sekmesine geç
       const formTab = new bootstrap.Tab(document.getElementById('form-tab'));
       formTab.show();
     }
@@ -646,16 +654,6 @@
       document.getElementById('raporForm').reset();
     }
 
-    // Listeden Tekil PDF İndirme
-    async function downloadSinglePDF(id) {
-      const reports = getSavedReports();
-      const report = reports.find(r => r.id === id);
-      if (report) {
-        await generatePDF(report);
-      }
-    }
-
-    // Rapor Silme
     function deleteReport(id) {
       if (confirm("Bu rapor kaydını silmek istediğinize emin misiniz?")) {
         let reports = getSavedReports();
@@ -667,12 +665,7 @@
 
     function escapeHtml(text) {
       if (!text) return '';
-      return text
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+      return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
   </script>
 </body>
