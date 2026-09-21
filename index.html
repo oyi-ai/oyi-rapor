@@ -142,14 +142,37 @@
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border-color);
     }
+
+    .nav-pills .nav-link {
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 8px 16px;
+      font-weight: 600;
+      font-size: 0.82rem;
+    }
+
+    .nav-pills .nav-link.active {
+      background-color: var(--accent-blue);
+      color: #fff;
+      border-color: var(--accent-cyan);
+    }
+
+    .report-card {
+      background: var(--subcard-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
   </style>
 </head>
 <body class="py-3 py-md-4">
-  <div class="container" style="max-width: 520px;">
+  <div class="container" style="max-width: 540px;">
     <div class="main-card p-3 p-sm-4">
       
       <!-- Ortalanmış Header -->
-      <div class="text-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+      <div class="text-center mb-3 pb-3 border-bottom border-secondary border-opacity-25">
         <div class="d-flex justify-content-center mb-2">
           <span class="badge badge-tactical px-2 py-1 rounded-pill d-flex align-items-center gap-1">
             <i class="fa-solid fa-circle text-success pulse-dot" style="font-size: 0.5rem;"></i> SAHA CANLI
@@ -172,105 +195,163 @@
         </div>
       </div>
 
-      <form id="raporForm">
-        <!-- Olay Adı -->
-        <div class="mb-3">
-          <label class="form-label text-uppercase">
-            <i class="fa-solid fa-clipboard-list me-1 text-info"></i> Olay Adı
-          </label>
-          <input type="text" id="olayAdi" class="form-control" placeholder="Örn: Evden Hırsızlık, Ateşli Silah" required>
-        </div>
+      <!-- Sekme Navigasyonu -->
+      <ul class="nav nav-pills nav-justified mb-3" id="mainTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="form-tab" data-bs-toggle="pill" data-bs-target="#form-section" type="button">
+            <i class="fa-solid fa-pen-to-square me-1"></i> Yeni Rapor
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="list-tab" data-bs-toggle="pill" data-bs-target="#list-section" type="button" onclick="renderReportList()">
+            <i class="fa-solid fa-folder-open me-1"></i> Kaydedilenler (<span id="savedCount">0</span>)
+          </button>
+        </li>
+      </ul>
 
-        <!-- Saatler -->
-        <div class="row g-2 mb-3">
-          <div class="col-6">
-            <label class="form-label text-uppercase">
-              <i class="fa-solid fa-clock me-1 text-info"></i> Bildiriliş Saati
-            </label>
-            <input type="time" id="bildirilisSaati" class="form-control" required>
-          </div>
-          <div class="col-6">
-            <label class="form-label text-uppercase">
-              <i class="fa-solid fa-route me-1 text-info"></i> İntikal Saati
-            </label>
-            <input type="time" id="intikalSaati" class="form-control" required>
-          </div>
-        </div>
+      <div class="tab-content" id="mainTabsContent">
+        
+        <!-- SEKME 1: RAPOR FORMU -->
+        <div class="tab-pane fade show active" id="form-section">
+          <form id="raporForm">
+            <input type="hidden" id="editingId" value="">
 
-        <!-- Ekip Kodu -->
-        <div class="mb-3">
-          <label class="form-label text-uppercase">
-            <i class="fa-solid fa-user-shield me-1 text-info"></i> Talep Eden Ekip Kodu
-          </label>
-          <input type="text" id="ekipKodu" class="form-control" placeholder="Örn: 4512 veya Asayiş Ekipleri" required>
-        </div>
+            <div id="editingBanner" class="alert alert-warning py-1 px-2 mb-3 d-none align-items-center justify-content-between" style="font-size: 0.8rem;">
+              <span><i class="fa-solid fa-pen me-1"></i> Var olan rapor düzenleniyor...</span>
+              <button type="button" class="btn btn-sm btn-link text-dark fw-bold p-0 text-decoration-none" onclick="cancelEdit()">Vazgeç</button>
+            </div>
 
-        <!-- Olay Adresi -->
-        <div class="mb-3">
-          <label class="form-label text-uppercase">
-            <i class="fa-solid fa-location-dot me-1 text-info"></i> Olay Adresi
-          </label>
-          <textarea id="olayAdresi" class="form-control" rows="2" placeholder="Mahalle, sokak, bina no, ilçe..." required></textarea>
-        </div>
+            <!-- Olay Adı -->
+            <div class="mb-3">
+              <label class="form-label text-uppercase">
+                <i class="fa-solid fa-clipboard-list me-1 text-info"></i> Olay Adı
+              </label>
+              <input type="text" id="olayAdi" class="form-control" placeholder="Örn: Evden Hırsızlık, Ateşli Silah" required>
+            </div>
 
-        <!-- Şahıs Bilgileri Sub-Card -->
-        <div class="sub-card mb-3">
-          <div class="d-flex align-items-center gap-2 mb-3">
-            <i class="fa-solid fa-id-card-clip text-info"></i>
-            <h6 class="fw-bold mb-0 text-white text-uppercase" style="font-size: 0.85rem; letter-spacing: 0.5px;">İlgili Şahıs Bilgileri</h6>
-          </div>
-          
-          <div class="mb-2">
-            <label class="form-label">T.C. KİMLİK NO</label>
-            <input type="text" id="tcNo" class="form-control form-control-sm" maxlength="11" placeholder="11 haneli T.C. Kimlik No">
-          </div>
+            <!-- Saatler -->
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label text-uppercase">
+                  <i class="fa-solid fa-clock me-1 text-info"></i> Bildiriliş Saati
+                </label>
+                <input type="time" id="bildirilisSaati" class="form-control" required>
+              </div>
+              <div class="col-6">
+                <label class="form-label text-uppercase">
+                  <i class="fa-solid fa-route me-1 text-info"></i> İntikal Saati
+                </label>
+                <input type="time" id="intikalSaati" class="form-control" required>
+              </div>
+            </div>
 
-          <div class="mb-2">
-            <label class="form-label">AD - SOYAD</label>
-            <input type="text" id="adSoyad" class="form-control form-control-sm" placeholder="Şahsın Adı ve Soyadı">
-          </div>
+            <!-- Ekip Kodu -->
+            <div class="mb-3">
+              <label class="form-label text-uppercase">
+                <i class="fa-solid fa-user-shield me-1 text-info"></i> Talep Eden Ekip Kodu
+              </label>
+              <input type="text" id="ekipKodu" class="form-control" placeholder="Örn: 4512 veya Asayiş Ekipleri" required>
+            </div>
 
-          <div>
-            <label class="form-label">OLAYDAKİ SIFATI</label>
-            <select id="sifat" class="form-select form-select-sm">
-              <option value="">Seçiniz...</option>
-              <option value="Şahıs Yok">Şahıs Yok</option>
-              <option value="Müşteki">Müşteki</option>
-              <option value="Şüpheli">Şüpheli</option>
-              <option value="Yaralı">Yaralı</option>
-              <option value="Mağdur">Mağdur</option>
-              <option value="Müşteki Yakını">Müşteki Yakını</option>
-            </select>
-          </div>
-        </div>
+            <!-- Olay Adresi -->
+            <div class="mb-3">
+              <label class="form-label text-uppercase">
+                <i class="fa-solid fa-location-dot me-1 text-info"></i> Olay Adresi
+              </label>
+              <textarea id="olayAdresi" class="form-control" rows="2" placeholder="Mahalle, sokak, bina no, ilçe..." required></textarea>
+            </div>
 
-        <!-- Notlar & Sesle Yaz -->
-        <div class="mb-3">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <label class="form-label text-uppercase mb-0">
-              <i class="fa-solid fa-pen-to-square me-1 text-info"></i> Notlar
-            </label>
-            <button type="button" id="micBtn" class="btn btn-outline-danger btn-sm rounded-pill px-3 btn-mic">
-              <i class="fa-solid fa-microphone me-1"></i> Sesle Yaz
+            <!-- Şahıs Bilgileri Sub-Card -->
+            <div class="sub-card mb-3">
+              <div class="d-flex align-items-center gap-2 mb-3">
+                <i class="fa-solid fa-id-card-clip text-info"></i>
+                <h6 class="fw-bold mb-0 text-white text-uppercase" style="font-size: 0.85rem; letter-spacing: 0.5px;">İlgili Şahıs Bilgileri</h6>
+              </div>
+              
+              <div class="mb-2">
+                <label class="form-label">T.C. KİMLİK NO</label>
+                <input type="text" id="tcNo" class="form-control form-control-sm" maxlength="11" placeholder="11 haneli T.C. Kimlik No">
+              </div>
+
+              <div class="mb-2">
+                <label class="form-label">AD - SOYAD</label>
+                <input type="text" id="adSoyad" class="form-control form-control-sm" placeholder="Şahsın Adı ve Soyadı">
+              </div>
+
+              <div>
+                <label class="form-label">OLAYDAKİ SIFATI</label>
+                <select id="sifat" class="form-select form-select-sm">
+                  <option value="">Seçiniz...</option>
+                  <option value="Şahıs Yok">Şahıs Yok</option>
+                  <option value="Müşteki">Müşteki</option>
+                  <option value="Şüpheli">Şüpheli</option>
+                  <option value="Yaralı">Yaralı</option>
+                  <option value="Mağdur">Mağdur</option>
+                  <option value="Müşteki Yakını">Müşteki Yakını</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Büyütülmüş Notlar & Sesle Yaz -->
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <label class="form-label text-uppercase mb-0">
+                  <i class="fa-solid fa-pen-to-square me-1 text-info"></i> Notlar ve Gözlemler
+                </label>
+                <button type="button" id="micBtn" class="btn btn-outline-danger btn-sm rounded-pill px-3 btn-mic">
+                  <i class="fa-solid fa-microphone me-1"></i> Sesle Yaz
+                </button>
+              </div>
+              <textarea id="notlar" class="form-control" rows="6" style="min-height: 140px;" placeholder="Olay yeri gözlemleri, delil detayları, iz ve emare tanımlamaları veya ilave notlar..."></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" id="submitBtn" class="btn btn-tactical w-100 mt-2">
+              <i class="fa-solid fa-file-pdf me-2"></i> RAPORU KAYDET & PDF İNDİR
             </button>
-          </div>
-          <textarea id="notlar" class="form-control" rows="3" placeholder="Olay yeri gözlemleri, delil detayları veya ilave notlar..."></textarea>
+          </form>
         </div>
 
-        <!-- Submit Button -->
-        <button type="submit" id="submitBtn" class="btn btn-tactical w-100 mt-2">
-          <i class="fa-solid fa-file-pdf me-2"></i> RAPORU KAYDET & PDF İNDİR
-        </button>
-      </form>
+        <!-- SEKME 2: KAYDEDİLEN RAPORLAR LİSTESİ -->
+        <div class="tab-pane fade" id="list-section">
+          <div id="reportListContainer">
+            <!-- Kaydedilen raporlar JavaScript ile buraya yüklenecek -->
+          </div>
+        </div>
+
+      </div>
 
       <div id="statusAlert" class="alert mt-3 d-none text-center" role="alert"></div>
     </div>
   </div>
 
-  <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyewwJAOXNMOPFJ9RG8m7vDIb78EO7pykHX5iPQxgCUjxqeg4fEghG9vUeFVKdgsVRgg/exec";
+  <!-- Bootstrap 5 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    // Sıfat "Şahıs Yok" Seçilince Otomatik Doldurma Mantığı
+  <script>
+    const STORAGE_KEY = "oyi_saved_reports";
+
+    // Sayfa Yüklendiğinde Kayıt Sayısını Güncelle
+    document.addEventListener("DOMContentLoaded", () => {
+      updateSavedCount();
+    });
+
+    function getSavedReports() {
+      const data = localStorage.getItem(STORAGE_KEY);
+      return data ? JSON.parse(data) : [];
+    }
+
+    function saveReportsToStorage(reports) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
+      updateSavedCount();
+    }
+
+    function updateSavedCount() {
+      const reports = getSavedReports();
+      document.getElementById('savedCount').textContent = reports.length;
+    }
+
+    // Sıfat "Şahıs Yok" Seçilince Otomatik Doldurma
     document.getElementById('sifat').addEventListener('change', function() {
       const adSoyadInput = document.getElementById('adSoyad');
       const tcNoInput = document.getElementById('tcNo');
@@ -332,12 +413,11 @@
       micBtn.innerHTML = '<i class="fa-solid fa-microphone me-1"></i> Sesle Yaz';
     }
 
-    // PDF Oluşturma Fonksiyonu (Düzeltildi)
+    // PDF Oluşturma Fonksiyonu
     async function generatePDF(payload) {
-      const today = new Date().toLocaleDateString('tr-TR');
+      const today = payload.createdDate || new Date().toLocaleDateString('tr-TR');
       const pdfContainer = document.createElement('div');
       
-      // Elemanı ekran koordinatında tutarak arka plana gizliyoruz (z-index: -99999)
       pdfContainer.style.position = 'fixed';
       pdfContainer.style.top = '0';
       pdfContainer.style.left = '0';
@@ -437,16 +517,18 @@
       }
     }
 
-    // Form Gönderme İşlemi
+    // Form Gönderme ve Kaydetme
     document.getElementById('raporForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       const submitBtn = document.getElementById('submitBtn');
       const statusAlert = document.getElementById('statusAlert');
+      const editingId = document.getElementById('editingId').value;
       
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> İletiliyor & PDF Hazırlanıyor...';
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> İşleniyor...';
 
       const payload = {
+        id: editingId ? Number(editingId) : Date.now(),
         olayAdi: document.getElementById('olayAdi').value,
         bildirilisSaati: document.getElementById('bildirilisSaati').value,
         intikalSaati: document.getElementById('intikalSaati').value,
@@ -455,25 +537,30 @@
         tcNo: document.getElementById('tcNo').value,
         adSoyad: document.getElementById('adSoyad').value,
         sifat: document.getElementById('sifat').value,
-        notlar: document.getElementById('notlar').value
+        notlar: document.getElementById('notlar').value,
+        createdDate: new Date().toLocaleDateString('tr-TR')
       };
 
       try {
-        // 1. Google Sheets'e Kaydet
-        fetch(SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+        // Yerel Hafızaya Sakla / Güncelle
+        let reports = getSavedReports();
+        if (editingId) {
+          reports = reports.map(r => r.id === payload.id ? payload : r);
+        } else {
+          reports.unshift(payload);
+        }
+        saveReportsToStorage(reports);
 
-        // 2. PDF Hazırla ve İndir
+        // PDF İndir
         await generatePDF(payload);
 
         statusAlert.className = "alert alert-success mt-3 text-center bg-dark text-success border-success";
-        statusAlert.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i> Rapor kaydedildi ve PDF indirildi!';
+        statusAlert.innerHTML = editingId 
+          ? '<i class="fa-solid fa-circle-check me-2"></i> Rapor güncellendi ve PDF indirildi!'
+          : '<i class="fa-solid fa-circle-check me-2"></i> Rapor yerel hafızaya kaydedildi ve PDF indirildi!';
+        
         statusAlert.classList.remove('d-none');
-        document.getElementById('raporForm').reset();
+        cancelEdit();
       } catch (err) {
         statusAlert.className = "alert alert-danger mt-3 text-center bg-dark text-danger border-danger";
         statusAlert.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-2"></i> Bir işlem sırasında hata oluştu.';
@@ -484,6 +571,109 @@
         setTimeout(() => statusAlert.classList.add('d-none'), 4000);
       }
     });
+
+    // Kaydedilen Raporları Ekrana Çizme
+    function renderReportList() {
+      const container = document.getElementById('reportListContainer');
+      const reports = getSavedReports();
+
+      if (reports.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-5 text-muted">
+            <i class="fa-regular fa-folder-open fa-3x mb-3 opacity-50"></i>
+            <p class="mb-0">Henüz kaydedilmiş bir rapor bulunmuyor.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = reports.map(r => `
+        <div class="report-card">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <h6 class="fw-bold text-white mb-1">${escapeHtml(r.olayAdi)}</h6>
+              <small class="text-secondary d-block"><i class="fa-regular fa-calendar me-1"></i> Tarih: ${r.createdDate || '-'} | <i class="fa-solid fa-user-shield me-1"></i> Ekip: ${escapeHtml(r.ekipKodu)}</small>
+            </div>
+            <span class="badge bg-primary bg-opacity-20 text-info border border-info border-opacity-25" style="font-size: 0.7rem;">${escapeHtml(r.sifat || 'Sıfat Belirtilmedi')}</span>
+          </div>
+          <p class="text-light small mb-3 text-truncate" style="max-width: 100%; opacity: 0.85;">
+            <i class="fa-solid fa-location-dot text-danger me-1"></i> ${escapeHtml(r.olayAdresi)}
+          </p>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-info flex-grow-1" onclick="editReport(${r.id})">
+              <i class="fa-solid fa-pen-to-square me-1"></i> Düzenle
+            </button>
+            <button class="btn btn-sm btn-outline-success" onclick="downloadSinglePDF(${r.id})">
+              <i class="fa-solid fa-file-pdf me-1"></i> PDF
+            </button>
+            <button class="btn btn-sm btn-outline-danger" onclick="deleteReport(${r.id})">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Rapor Düzenleme Moduna Alma
+    function editReport(id) {
+      const reports = getSavedReports();
+      const report = reports.find(r => r.id === id);
+      if (!report) return;
+
+      document.getElementById('editingId').value = report.id;
+      document.getElementById('olayAdi').value = report.olayAdi || '';
+      document.getElementById('bildirilisSaati').value = report.bildirilisSaati || '';
+      document.getElementById('intikalSaati').value = report.intikalSaati || '';
+      document.getElementById('ekipKodu').value = report.ekipKodu || '';
+      document.getElementById('olayAdresi').value = report.olayAdresi || '';
+      document.getElementById('tcNo').value = report.tcNo || '';
+      document.getElementById('adSoyad').value = report.adSoyad || '';
+      document.getElementById('sifat').value = report.sifat || '';
+      document.getElementById('notlar').value = report.notlar || '';
+
+      document.getElementById('editingBanner').classList.remove('d-none');
+      document.getElementById('editingBanner').classList.add('d-flex');
+
+      // Form sekmesine geç
+      const formTab = new bootstrap.Tab(document.getElementById('form-tab'));
+      formTab.show();
+    }
+
+    function cancelEdit() {
+      document.getElementById('editingId').value = '';
+      document.getElementById('editingBanner').classList.add('d-none');
+      document.getElementById('editingBanner').classList.remove('d-flex');
+      document.getElementById('raporForm').reset();
+    }
+
+    // Listeden Tekil PDF İndirme
+    async function downloadSinglePDF(id) {
+      const reports = getSavedReports();
+      const report = reports.find(r => r.id === id);
+      if (report) {
+        await generatePDF(report);
+      }
+    }
+
+    // Rapor Silme
+    function deleteReport(id) {
+      if (confirm("Bu rapor kaydını silmek istediğinize emin misiniz?")) {
+        let reports = getSavedReports();
+        reports = reports.filter(r => r.id !== id);
+        saveReportsToStorage(reports);
+        renderReportList();
+      }
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
   </script>
 </body>
 </html>
