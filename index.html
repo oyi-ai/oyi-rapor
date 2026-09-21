@@ -131,26 +131,45 @@
       font-weight: 700;
       letter-spacing: 0.5px;
     }
+
+    .header-icon-box {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+    }
   </style>
 </head>
 <body class="py-3 py-md-4">
   <div class="container" style="max-width: 520px;">
     <div class="main-card p-3 p-sm-4">
       
-      <!-- Header -->
-      <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
-        <div class="d-flex align-items-center gap-2">
-          <div class="bg-primary bg-opacity-25 p-2 rounded-3 text-info">
-            <i class="fa-solid fa-shield-halved fa-lg"></i>
+      <!-- Ortalanmış Header -->
+      <div class="text-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+        <div class="d-flex justify-content-center mb-2">
+          <span class="badge badge-tactical px-2 py-1 rounded-pill d-flex align-items-center gap-1">
+            <i class="fa-solid fa-circle text-success pulse-dot" style="font-size: 0.5rem;"></i> SAHA CANLI
+          </span>
+        </div>
+
+        <div class="d-flex align-items-center justify-content-center gap-3">
+          <div class="header-icon-box shadow-sm" style="font-size: 1.5rem; line-height: 1;">
+            🇹🇷
           </div>
+
           <div>
-            <h5 class="fw-bold mb-0 text-white">OYİ RAPOR ASİSTANI</h5>
-            <small class="text-secondary" style="font-size: 0.75rem;">Olay Yeri İnceleme Sistemi</small>
+            <h5 class="fw-bold mb-0 text-white text-uppercase" style="letter-spacing: 0.8px;">OYİ RAPOR ASİSTANI</h5>
+            <small class="text-secondary" style="font-size: 0.72rem; letter-spacing: 0.5px;">OLAY YERİ İNCELEME SİSTEMİ</small>
+          </div>
+
+          <div class="header-icon-box text-info shadow-sm" style="font-size: 1.3rem;">
+            <i class="fa-solid fa-fingerprint"></i>
           </div>
         </div>
-        <span class="badge badge-tactical px-2 py-1 rounded-pill d-flex align-items-center gap-1">
-          <i class="fa-solid fa-circle text-success pulse-dot" style="font-size: 0.5rem;"></i> SAHA CANLI
-        </span>
       </div>
 
       <form id="raporForm">
@@ -215,6 +234,7 @@
             <label class="form-label">OLAYDAKİ SIFATI</label>
             <select id="sifat" class="form-select form-select-sm">
               <option value="">Seçiniz...</option>
+              <option value="Şahıs Yok">Şahıs Yok</option>
               <option value="Müşteki">Müşteki</option>
               <option value="Şüpheli">Şüpheli</option>
               <option value="Yaralı">Yaralı</option>
@@ -248,7 +268,21 @@
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyewwJAOXNMOP9FJ9RG8m7vDIb78EO7pykHX5iPQxgCUjxqeg4fEghG9vUeFVKdgsVRgg/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyewwJAOXNMOPFJ9RG8m7vDIb78EO7pykHX5iPQxgCUjxqeg4fEghG9vUeFVKdgsVRgg/exec";
+
+    // Sıfat "Şahıs Yok" Seçilince Otomatik Doldurma Mantığı
+    document.getElementById('sifat').addEventListener('change', function() {
+      const adSoyadInput = document.getElementById('adSoyad');
+      const tcNoInput = document.getElementById('tcNo');
+      
+      if (this.value === 'Şahıs Yok') {
+        adSoyadInput.value = 'Kamu Hukuku';
+        tcNoInput.value = '-';
+      } else {
+        if (adSoyadInput.value === 'Kamu Hukuku') adSoyadInput.value = '';
+        if (tcNoInput.value === '-') tcNoInput.value = '';
+      }
+    });
 
     // Ses Tanıma Entegrasyonu
     const micBtn = document.getElementById('micBtn');
@@ -298,15 +332,25 @@
       micBtn.innerHTML = '<i class="fa-solid fa-microphone me-1"></i> Sesle Yaz';
     }
 
-    // PDF Oluşturma Fonksiyonu
+    // PDF Oluşturma Fonksiyonu (Düzeltildi)
     async function generatePDF(payload) {
       const today = new Date().toLocaleDateString('tr-TR');
       const pdfContainer = document.createElement('div');
       
-      pdfContainer.style.padding = '30px';
+      // PDF Tasarım & Konumlandırma Ayarları
+      pdfContainer.style.position = 'absolute';
+      pdfContainer.style.left = '-9999px';
+      pdfContainer.style.top = '0';
+      pdfContainer.style.width = '190mm';
+      pdfContainer.style.padding = '20px';
       pdfContainer.style.color = '#000000';
       pdfContainer.style.backgroundColor = '#ffffff';
       pdfContainer.style.fontFamily = 'Arial, sans-serif';
+
+      // Notlar alanındaki alt satıra geçişleri PDF'te koruma
+      const formattedNotlar = payload.notlar 
+        ? payload.notlar.replace(/\n/g, '<br>') 
+        : 'Herhangi bir not girilmedi.';
 
       pdfContainer.innerHTML = `
         <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 12px; margin-bottom: 20px;">
@@ -356,8 +400,8 @@
         </table>
 
         <h4 style="margin-bottom: 8px; font-size: 11pt; text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 4px;">3. Olay Yeri Notları ve İnceleme Detayları</h4>
-        <div style="border: 1px solid #000; padding: 10px; min-height: 120px; font-size: 10pt; white-space: pre-wrap; background: #fafafa; margin-bottom: 40px;">
-          ${payload.notlar || 'Herhangi bir not girilmedi.'}
+        <div style="border: 1px solid #000; padding: 12px; min-height: 120px; font-size: 10pt; background: #fafafa; margin-bottom: 40px; line-height: 1.5;">
+          ${formattedNotlar}
         </div>
 
         <table style="width: 100%; margin-top: 40px; font-size: 10pt; text-align: center; border: none;">
@@ -374,19 +418,25 @@
         </table>
       `;
 
-      const safeFileName = payload.olayAdi.replace(/[^a-zA-Z0-9çğıöşüÇĞİÖŞÜ]/g, '_');
+      document.body.appendChild(pdfContainer);
+
+      const safeFileName = (payload.olayAdi || 'Rapor').replace(/[^a-zA-Z0-9çğıöşüÇĞİÖŞÜ]/g, '_');
       const opt = {
         margin:       10,
         filename:     `OYI_Raporu_${safeFileName}_${today.replace(/\./g, '-')}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
+        html2canvas:  { scale: 2, logging: false, useCORS: true },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
-      await html2pdf().set(opt).from(pdfContainer).save();
+      try {
+        await html2pdf().set(opt).from(pdfContainer).save();
+      } finally {
+        document.body.removeChild(pdfContainer);
+      }
     }
 
-    // Form Gönderme & PDF Çıktısı İşlemi
+    // Form Gönderme İşlemi
     document.getElementById('raporForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       const submitBtn = document.getElementById('submitBtn');
@@ -416,11 +466,11 @@
           body: JSON.stringify(payload)
         });
 
-        // 2. PDF İndir
+        // 2. PDF Hazırla ve İndir
         await generatePDF(payload);
 
         statusAlert.className = "alert alert-success mt-3 text-center bg-dark text-success border-success";
-        statusAlert.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i> Rapor başarıyla kaydedildi ve PDF indirildi!';
+        statusAlert.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i> Rapor kaydedildi ve PDF indirildi!';
         statusAlert.classList.remove('d-none');
         document.getElementById('raporForm').reset();
       } catch (err) {
