@@ -337,17 +337,18 @@
       const today = new Date().toLocaleDateString('tr-TR');
       const pdfContainer = document.createElement('div');
       
-      // PDF Tasarım & Konumlandırma Ayarları
-      pdfContainer.style.position = 'absolute';
-      pdfContainer.style.left = '-9999px';
+      // Elemanı ekran koordinatında tutarak arka plana gizliyoruz (z-index: -99999)
+      pdfContainer.style.position = 'fixed';
       pdfContainer.style.top = '0';
-      pdfContainer.style.width = '190mm';
-      pdfContainer.style.padding = '20px';
+      pdfContainer.style.left = '0';
+      pdfContainer.style.zIndex = '-99999';
+      pdfContainer.style.width = '210mm';
+      pdfContainer.style.boxSizing = 'border-box';
+      pdfContainer.style.padding = '20mm';
       pdfContainer.style.color = '#000000';
       pdfContainer.style.backgroundColor = '#ffffff';
       pdfContainer.style.fontFamily = 'Arial, sans-serif';
 
-      // Notlar alanındaki alt satıra geçişleri PDF'te koruma
       const formattedNotlar = payload.notlar 
         ? payload.notlar.replace(/\n/g, '<br>') 
         : 'Herhangi bir not girilmedi.';
@@ -400,7 +401,7 @@
         </table>
 
         <h4 style="margin-bottom: 8px; font-size: 11pt; text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 4px;">3. Olay Yeri Notları ve İnceleme Detayları</h4>
-        <div style="border: 1px solid #000; padding: 12px; min-height: 120px; font-size: 10pt; background: #fafafa; margin-bottom: 40px; line-height: 1.5;">
+        <div style="border: 1px solid #000; padding: 12px; min-height: 120px; font-size: 10pt; background: #fafafa; margin-bottom: 40px; line-height: 1.5; word-wrap: break-word;">
           ${formattedNotlar}
         </div>
 
@@ -422,7 +423,7 @@
 
       const safeFileName = (payload.olayAdi || 'Rapor').replace(/[^a-zA-Z0-9çğıöşüÇĞİÖŞÜ]/g, '_');
       const opt = {
-        margin:       10,
+        margin:       0,
         filename:     `OYI_Raporu_${safeFileName}_${today.replace(/\./g, '-')}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2, logging: false, useCORS: true },
