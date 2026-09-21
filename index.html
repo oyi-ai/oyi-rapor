@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OYİ Rapor Asistanı</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #f4f6f9; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    .card { border: none; border-radius: 16px; box-shadow: 0 4px 18px rgba(0,0,0,0.08); }
+    .btn-mic { transition: all 0.3s ease; }
+    .recording { animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+  </style>
+</head>
+<body class="py-4">
+  <div class="container" style="max-width: 500px;">
+    <div class="card p-4">
+      <div class="text-center mb-4">
+        <h3 class="fw-bold text-primary">📋 OYİ Rapor Asistanı</h3>
+        <p class="text-muted small mb-0">Saha Olay Yeri İnceleme Kayıt Formu</p>
+      </div>
+
+      <form id="raporForm">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Ekip Kodu</label>
+          <input type="text" id="ekipKodu" class="form-control form-control-lg" placeholder="Örn: OYİ-102" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Olay Türü</label>
+          <select id="olayTuru" class="form-select form-select-lg" required>
+            <option value="">Seçiniz...</option>
+            <option value="Hırsızlık">Hırsızlık</option>
+            <option value="Kasten Yaralama / Cinayet">Kasten Yaralama / Cinayet</option>
+            <option value="Trafik Kazası">Trafik Kazası</option>
+            <option value="Ateşli Silah Olayı">Ateşli Silah Olayı</option>
+            <option value="Yangın / Kundaklama">Yangın / Kundaklama</option>
+            <option value="Diğer">Diğer</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Adres / Konum</label>
+          <textarea id="adres" class="form-control" rows="2" placeholder="Olay yeri adresi veya mahalle/sokak bilgisi" required></textarea>
+        </div>
+
+        <div class="mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <label class="form-label fw-semibold mb-0">Sesli Notlar</label>
+            <button type="button" id="micBtn" class="btn btn-outline-danger btn-sm rounded-pill btn-mic">
+              🎤 Sesle Yaz
+            </button>
+          </div>
+          <textarea id="sesliNotlar" class="form-control" rows="4" placeholder="Mikrofon butonuna basarak konuşabilirsiniz..."></textarea>
+        </div>
+
+        <button type="submit" id="submitBtn" class="btn btn-primary btn-lg w-100 mt-3 fw-bold">
+          Raporu Kaydet ve Gönder
+        </button>
+      </form>
+
+      <div id="statusAlert" class="alert mt-3 d-none text-center" role="alert"></div>
+    </div>
+  </div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyewwJAOXNMOP9FJ9RG8m7vDIb78EO7pykHX5iPQxgCUjxqeg4fEghG9vUeFVKdgsVRgg/exec";
+
+    // Sesli Tanıma Entegrasyonu (Speech Recognition)
+    const micBtn = document.getElementById('micBtn');
+    const sesliNotlar = document.getElementById('sesliNotlar');
+    let recognition = null;
+    let isListening = false;
+
+    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognition();
+      recognition.lang = 'tr-TR';
+      recognition.continuous = true;
+      recognition.interimResults = true;
+
+      recognition.onresult = (event) => {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        sesliNotlar.value += (sesliNotlar.value ? ' ' : '') + transcript;
+      };
+
+      recognition.onerror = (e) => {
+        console.error("Ses tanıma hatası:", e);
+        stopListening();
+      };
+
+      recognition.onend = () => {
+        if (isListening) stopListening();
+      };
+
+      micBtn.addEventListener('click', () => {
+        if (!isListening) {
+          recognition.start();
+          isListening = true;
+          micBtn.classList.remove('btn-outline-danger');
+          micBtn.classList.add('btn-danger', 'recording');
+          micBtn.innerHTML = '🛑 Dinleniyor... (Durdur)';
+        } else {
+          stopListening();
+        }
+      });
+    } else {
+      micBtn.disabled = true;
+      micBtn.innerText = 'Sesli yazma desteklenmiyor';
+    }
+
+    function stopListening() {
+      if (recognition && isListening) {
+        recognition.stop();
+      }
+      isListening = false;
+      micBtn.classList.remove('btn-danger', 'recording');
+      micBtn.classList.add('btn-outline-danger');
+      micBtn.innerHTML = '🎤 Sesle Yaz';
+    }
+
+    // Form Gönderme İşlemi
+    document.getElementById('raporForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const submitBtn = document.getElementById('submitBtn');
+      const statusAlert = document.getElementById('statusAlert');
+      
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Gönderiliyor...';
+
+      const payload = {
+        ekipKodu: document.getElementById('ekipKodu').value,
+        olayTuru: document.getElementById('olayTuru').value,
+        adres: document.getElementById('adres').value,
+        sesliNotlar: document.getElementById('sesliNotlar').value
+      };
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        statusAlert.className = "alert alert-success mt-3 text-center";
+        statusAlert.innerText = "✅ Rapor başarıyla E-Tabloya aktarıldı!";
+        statusAlert.classList.remove('d-none');
+        
+        document.getElementById('raporForm').reset();
+      } catch (err) {
+        statusAlert.className = "alert alert-danger mt-3 text-center";
+        statusAlert.innerText = "❌ Gönderim sırasında bir hata oluştu.";
+        statusAlert.classList.remove('d-none');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Raporu Kaydet ve Gönder';
+        setTimeout(() => statusAlert.classList.add('d-none'), 4000);
+      }
+    });
+  </script>
+</body>
+</html>
